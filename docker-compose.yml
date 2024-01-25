@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  db:
+    container_name: postgres
+    image: postgres
+    environment: 
+      - POSTGRES_DB=test
+      - POSTGRES_USER=userpg
+      - POSTGRES_PASSWORD=pa$$w0rdpg 
+    ports: 
+      - "5432:5432"
+    volumes:
+      - ./local-pgdata:/var/lib/postgresql/data
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes: 
+      - .:/code/
+    ports: 
+      - "8000:8000"
+    depends_on:
+      - db
+
+  pgadmin4:
+    container_name: pgadmin4
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@test.com
+      PGADMIN_DEFAULT_PASSWORD: pa$$w0rd
+    ports:
+      - "5050:80"
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+
+volumes:
+      local-pgdata:
+      pgadmin-data:
